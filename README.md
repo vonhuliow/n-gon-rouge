@@ -4,7 +4,7 @@
   <a href="http://cyclokid.github.io/ngon" target="blank"><img src="https://i.imgur.com/xM2gDVX.png" width="120" alt="N-GON" /></a>
 </p>
 
-#### Making my fork just a little bit more unique
+#### Making my fork just a little bit more me
 
 Hosted on my own alternative site
 
