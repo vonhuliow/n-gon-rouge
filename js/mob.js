@@ -30,6 +30,20 @@ const mobs = {
             // }
         }
     },
+    defaultHealthBar() {
+        for (let i = 0, len = mob.length; i < len; i++) {
+            if (mob[i].seePlayer.recall && mob[i].showHealthBar) {
+                const h = mob[i].radius * 0.3;
+                const w = mob[i].radius * 2;
+                const x = mob[i].position.x - w / 2;
+                const y = mob[i].position.y - w * 0.7;
+                ctx.fillStyle = "rgba(100, 100, 100, 0.3)";
+                ctx.fillRect(x, y, w, h);
+                ctx.fillStyle = "rgba(255,0,0,0.7)";
+                ctx.fillRect(x, y, w * mob[i].health, h);
+            }
+        }
+    },
     healthBar() {
         for (let i = 0, len = mob.length; i < len; i++) {
             if (mob[i].seePlayer.recall && mob[i].showHealthBar) {
@@ -644,29 +658,6 @@ const mobs = {
                                 this.cons.length = 100 + 1.5 * this.radius;
                                 this.cons2.length = 100 + 1.5 * this.radius;
                             }
-
-
-
-                            // if (!(simulation.cycle % (this.seePlayerFreq * 2))) {
-                            //     const unit = Vector.normalise(Vector.sub(this.seePlayer.position, this.position))
-                            //     const goal = Vector.add(this.position, Vector.mult(unit, stepRange))
-                            //     this.springTarget.x = goal.x;
-                            //     this.springTarget.y = goal.y;
-                            //     // this.springTarget.x = this.seePlayer.position.x;
-                            //     // this.springTarget.y = this.seePlayer.position.y;
-                            //     this.cons.length = -200;
-                            //     this.cons2.length = 100 + 1.5 * this.radius;
-                            // } else if (!(simulation.cycle % this.seePlayerFreq)) {
-                            //     const unit = Vector.normalise(Vector.sub(this.seePlayer.position, this.position))
-                            //     const goal = Vector.add(this.position, Vector.mult(unit, stepRange))
-                            //     this.springTarget2.x = goal.x;
-                            //     this.springTarget2.y = goal.y;
-                            //     // this.springTarget2.x = this.seePlayer.position.x;
-                            //     // this.springTarget2.y = this.seePlayer.position.y;
-                            //     this.cons.length = 100 + 1.5 * this.radius;
-                            //     this.cons2.length = -200;
-                            // }
-
                         }
                     }
                 }
@@ -1010,8 +1001,9 @@ const mobs = {
                     this.death(); //death with no power up
                 }
             },
-            healthBar() { //draw health by mob //most health bars are drawn in mobs.healthbar();
-                if (this.seePlayer.recall) {
+            //draw health by mob //most health bars are drawn in mobs.healthBar(); , not this
+            healthBar() {
+                if (this.seePlayer.recall && !level.isHideHealth) {
                     const h = this.radius * 0.3;
                     const w = this.radius * 2;
                     const x = this.position.x - w / 2;
@@ -1131,6 +1123,7 @@ const mobs = {
             //     ctx.stroke();
             // },
             leaveBody: true,
+            maxMobBody: 40,
             isDropPowerUp: true,
             death() {
                 if (tech.collidePowerUps && this.isDropPowerUp) powerUps.randomize(this.position) //needs to run before onDeath spawns power ups
@@ -1391,7 +1384,7 @@ const mobs = {
             //replace dead mob with a regular body
             replace(i) {
                 //if there are too many bodies don't turn into blocks to help performance
-                if (this.leaveBody && body.length < 40 && this.mass < 200 && this.radius > 18) {
+                if (this.leaveBody && body.length < mobs.maxMobBody && this.mass < 200 && this.radius > 18) {
                     let v = Matter.Vertices.hull(Matter.Vertices.clockwiseSort(this.vertices)) //might help with vertex collision issue, not sure
                     if (v.length > 5 && body.length < 35 && Math.random() < 0.25) {
                         const cutPoint = 3 + Math.floor((v.length - 6) * Math.random()) //Math.floor(v.length / 2)

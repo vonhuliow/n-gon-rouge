@@ -1,35 +1,17 @@
 ******************************************************** NEXT PATCH **************************************************
 
-tech: hidden-variable theory - after choosing a fieldtech gain 1.15x damage
-  for pilot wave only
-polariton - boosts also give 0.3x damage taken
+images are back as an option due to public outcry
 
-constraints
-  removed
-    full damage taken after boss dies
-      wording is too unclear
-  new
-    0.5x energy regen from all sources
-  balanced
-    slow bots
-      bots have roughly 15% reduction in damage in addition to a slow follow speed
-    mob death heals mobs
-      has 1000->700 range and 1->0.33 healing
-    periodically spawn WIMPs
-      has a 30s delay and a 15->6s spawn rate
-    50->40% JUNK chance
+bug fixes
+  getting a power up quickly after warp, difficulty or instructions power ups was making the screen go blank
+  heuristics resets on death properly now
 
-
-heuristics gives (1-1.5x)->(1-2x) fire rate and +5% JUNK
-autonomous defense harpoon now scale from Bessemer process
-  but at half the rate since there are 6 harpoons
-Bessemer process and rail gun scale at 0.1->0.07
-
-bugs
-  crash with training level "heal" and power ups
-  set difficulty mode level 2 for training
 
 ******************************************************** BUGS ********************************************************
+
+
+  can't consistenly reproduce, but it happened several times this way
+    on initial level I press T and took the warp and exited it,  then I too a field and the screen went blank
 
 figure out why seeded random isn't making runs the same:
   shuffle is being used for a wide variety of things that don't need a seeded random
@@ -59,89 +41,57 @@ player can become crouched while not touching the ground if they exit the ground
 
 *********************************************************** TODO *****************************************************
 
+extended vertical flip to edge cases:
+  !!stored circular graphics     simulation.drawList.push
+
+add more tips:
+  download latest version of n-gon
+  https://codeload.github.com/landgreen/n-gon/zip/refs/heads/master
+
+
+new level based laser element
+  !!update new version into other levels
+
+level technique: pairs of touch activated elevators jump on one to get high enough to jump on the next one
+
+new vertical flip level
+  long horizontal
+  several buttons
+    shorten flip time?
+      
+
+
+constraints should show future constraints in pause menu
+  pre calculate all constraints for up to 13 levels?
+    loop constraints after that
+
 procedural animation 
   https://www.youtube.com/watch?v=qlfh_rv6khY
 
-maybe no constraints on final boss and reactor?
+not implemented random constraint ideas________________________
+  mob death spawns something
+    mob bullets
+  bosses heals nearby mobs
+  ammo power ups give 0.7x ammo
+  2x research costs
+  mobs slowly regen health
+  exit door takes 10x time to open,
+    and while door is opening (ghosters, suckers) attack?
+  can't have more then 15 bullets
+    how to code?
+  remove 2 random tech and return them next level
 
-constraints balance
-  50% JUNK chance
-  4x shielded mob chance
-  power ups are sent to next level
-  +33% chance for mobs to respawn
-  -1 choice
-  2x ammo costs
-    maybe nerf...
-  0 duplication
-  50% max energy
-  50% max health
-  bots follow slow
-  0.1x damage after a power up
-  mob death heals mobs
-  mobs heal for your lost health
-  periodically spawn WIMPs
-  0.5x energy regen
+tech: ice-VII - 1.5x duration for ice-IX
 
-each difficulty setting adds a chance for a random effect
-  make some effects only possible on certain levels, or with certain bosses?
-  not implemented random constraint ideas________________________
-    mob death spawns something
-      mob bullets
-    bosses heals nearby mobs
-    ammo power ups give 0.7x ammo
-    2x research costs
-    mobs slowly regen health
-    exit door takes 10x time to open,
-      and while door is opening (ghosters, suckers) attack?
-    can't pause while choosing tech, gun, field similar to eternalism
-    can't have more then 15 bullets
-    bots do 0.5x damage
-    remove 2 random tech and return them next level
-    too niche
-      player damage is 0.25x while player is invulnerable
-      all hazards: lasers and slime do 3x damage
-      player lasers and radiation do 0.5x damage
-      explosions do 0.5x damage
-      freeze effects last 0.25x time
-
-tech: - lower damage taken over 10s to 0x but after taking damage increase damage taken to 1x
-  isn't this just CPT skin with less steps?
-  maybe skin 
-
-tech: - freezing grenades/explosions
-
-tech: - randomize constraints somehow
-    in pause interface or power up selection menu?
-    each time you research the current constraints also randomize?
-    only allowed if difficulty is high enough
+tech:  - freezing grenades/explosions
 
 tech:  - when you get a bot, get a second bot
-
-tech:  - boost power ups also give 0.1x damage taken
-
-tech:  - tech have +3 choices to eject your tech
-  <eject> tech name
-    no description?
-
-copy negative-player as a boss?  or a JUNK tech?
-  code is in community map (not sure which)
-
-harpoon tech:  - after firing 4 harpoons your next harpoon has 4x damage
-  need to track number fired
 
 tech:  - after killing a Boss
   heal to full
   gain 3x damage for the rest of the level
 
-tech: clicking on this tech in the pause menu will teleport you to the next level
-
-tech:   - instead of reeling in grappling hook teleport to the hook after releasing field button
-  this might need another buff?
-    give damage immunity after teleport for 1+ seconds to balance
-
 new level - rework testChamber
-
-skin with wheel instead of legs
 
 Boss (or mob) that quickly moves towards player, but they moves perpendicularly to player, like dodging
   could respond to when player presses fire key or to when it takes damage
@@ -174,9 +124,6 @@ tech: atomic pile - lose 1 health if you are above the maximum energy
   do damage?
   plasma torch tech?
 
-field tech: molecular assembler - every time you spawn a drone/spore/... become immune to damage for time
-  scales with how much energy was used to spawn drone/...
-
 figure out how to put instructions for controls in background on initial level
   mouse smooth makes the text position jitter when it moves sub pixels
     hide the jitter with artificial jitter to make it seem intentional
@@ -192,9 +139,6 @@ increase mass and movement speed at the same time
   possible player.mass bad interactions
     grapple
 
-JUNK tech - player takes damage from block collisions
-  is this gonna contribute to lag?
-
 bullets should trigger shrinking platforms level element?
 
 level element - player activated elevators
@@ -204,18 +148,6 @@ level element - player activated elevators
 rework energy and health HUD
   make both diegetic?
     how?  not sure there is a good way to do this...
-  should health be red or green?
-
-flip player upside down
-  how 
-    rotate player in matter.js
-      make sure floor sensor works
-    flip player crouch direction
-    redraw legs, orb
-    flip gravity
-  when to use?
-    fieldTech: negative mass?
-    effect in level
 
 tech - after a power up is duplicated
   update text to random effect after choosing tech, or after each trigger, or on first display of tech
@@ -1392,6 +1324,10 @@ possible names for tech
   cryocoolers - freezing effects
   metaphysics - maybe this changes something deep and universal about physics?  not sure
   cork - used as a heat shield for rockets
+  P = NP - something with speeding up calculation times
+  transistivity - something where a>b and b>c ->  a>c
+  lenticular - looks different from different angles (lasers?)
+  De Sitter space - simple model of universe related to general relativity (mass-energy?)
 
 ******************************************************* DESIGN ******************************************************
 
