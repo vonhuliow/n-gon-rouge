@@ -212,7 +212,7 @@ const powerUps = {
     dupExplode() {
         for (let i = 0, len = powerUp.length; i < len; ++i) {
             if (powerUp[i].isDuplicated) {
-                if (Math.random() < 0.003 && !m.isBodiesAsleep) { //  (1-0.003)^240 = chance to be removed after 4 seconds,   240 = 4 seconds * 60 cycles per second
+                if (Math.random() < 0.003 && !m.isTimeDilated) { //  (1-0.003)^240 = chance to be removed after 4 seconds,   240 = 4 seconds * 60 cycles per second
                     b.explosion(powerUp[i].position, 175 + (11 + 3 * Math.random()) * powerUp[i].size);
                     if (powerUp[i]) {
                         Matter.Composite.remove(engine.world, powerUp[i]);
@@ -256,6 +256,8 @@ const powerUps = {
         powerUps.endDraft(type);
     },
     showDraft() {
+        simulation.isChoosing = true; //stops p from un pausing on key down
+
         //disable clicking for 1/2 a second to prevent mistake clicks
         document.getElementById("choose-grid").style.pointerEvents = "none";
         document.body.style.cursor = "none";
@@ -264,7 +266,6 @@ const powerUps = {
             document.getElementById("choose-grid").style.pointerEvents = "auto";
             document.getElementById("choose-grid").style.transitionDuration = "0s";
         }, 400);
-        simulation.isChoosing = true; //stops p from un pausing on key down
 
         if (!simulation.paused) {
             if (tech.isNoDraftPause || level.isNoPause) {
@@ -285,7 +286,7 @@ const powerUps = {
     endDraft(type, isCanceled = false) { //type should be a gun, tech, or field
         if (isCanceled) {
             if (tech.isCancelDuplication) {
-                const value = 0.05
+                const value = 0.06
                 tech.duplication += value
                 simulation.inGameConsole(`tech.duplicationChance() <span class='color-symbol'>+=</span> ${value}`)
                 simulation.circleFlare(value);
@@ -708,7 +709,7 @@ const powerUps = {
             if (amount !== 0) powerUps.research.count += amount
             if (tech.isRerollBots && !this.isMakingBots) {
                 let cycle = () => {
-                    const cost = 2 + Math.floor(0.25 * b.totalBots())
+                    const cost = 2 + Math.floor(b.totalBots() / 3)
                     if (m.alive && powerUps.research.count >= cost) {
                         requestAnimationFrame(cycle);
                         this.isMakingBots = true
@@ -762,7 +763,7 @@ const powerUps = {
             }
             powerUps.research.currentRerollCount++
             if (tech.isResearchReality) {
-                m.switchWorlds()
+                m.switchWorlds("Ψ(t) collapse")
                 simulation.trails()
                 simulation.inGameConsole(`simulation.amplitude <span class='color-symbol'>=</span> ${Math.random()}`);
             }
@@ -785,7 +786,7 @@ const powerUps = {
                     m.addHealth(heal);
                     if (healOutput > 0) simulation.inGameConsole(`<div class="circle-grid heal"></div> &nbsp; <span class='color-var'>m</span>.health <span class='color-symbol'>+=</span> ${(healOutput).toFixed(3)}`) // <br>${m.health.toFixed(3)}
                     if (tech.isOverHeal && overHeal > 0) { //tech quenching
-                        tech.extraMaxHealth += 0.4 * overHeal //increase max health
+                        tech.extraMaxHealth += 0.5 * overHeal //increase max health
                         m.setMaxHealth();
                         simulation.inGameConsole(`<div class="circle-grid heal"></div> &nbsp; <span class='color-var'>m</span>.maxHealth <span class='color-symbol'>+=</span> ${(0.3 * overHeal).toFixed(3)}`)
                         simulation.drawList.push({ //add dmg to draw queue
@@ -812,7 +813,7 @@ const powerUps = {
                         //     color: simulation.mobDmgColor,
                         //     time: simulation.drawTime
                         // });
-                    } else if (overHeal > 0.13) { //if leftover heals spawn a new spammer heal power up
+                    } else if (overHeal > 0.2) { //if leftover heals spawn a new spammer heal power up
                         requestAnimationFrame(() => {
                             powerUps.directSpawn(this.position.x, this.position.y, "heal", true, Math.min(1, overHeal) * 40 * (simulation.healScale ** 0.25))//    directSpawn(x, y, name, moving = true, mode = null, size = powerUps[name].size()) {
                         });
@@ -883,7 +884,7 @@ const powerUps = {
             const couplingExtraAmmo = (m.fieldMode === 10 || m.fieldMode === 0) ? 1 + 0.04 * m.coupling : 1
             if (b.inventory.length > 0) {
                 powerUps.animatePowerUpGrab('rgba(68, 102, 119,0.25)')
-                if (tech.isAmmoForGun && b.activeGun !== null) { //give extra ammo to one gun only with tech logistics
+                if (tech.isAmmoForGun && (b.activeGun !== null && b.activeGun !== undefined)) { //give extra ammo to one gun only with tech logistics
                     const name = b.guns[b.activeGun]
                     if (name.ammo !== Infinity) {
                         if (tech.ammoCap) {
@@ -909,7 +910,7 @@ const powerUps = {
         }
     },
     cancelText(type) {
-        if (tech.isSuperDeterminism) {
+        if (tech.isSuperDeterminism || type === "constraint") {
             return `<div></div>`
         } else if (tech.isCancelTech && tech.cancelTechCount === 0) {
             return `<div class='cancel-card sticky' onclick='powerUps.endDraft("${type}",true)' style="width: 115px;"><span class="color-randomize">randomize</span></div>`
@@ -940,7 +941,9 @@ const powerUps = {
     },
     researchAndCancelText(type) {
         let text = `<div class='research-cancel'>`
-        if (type === "entanglement") {
+        if (type === "constraint") {
+            return
+        } else if (type === "entanglement") {
             text += `<span class='research-card entanglement flipX' style="width: 275px;" onclick='powerUps.endDraft("${type}",true)'><span style="letter-spacing: 6px;">entanglement</span></span>`
         } else if (tech.isJunkResearch && powerUps.research.currentRerollCount < 2) {
             text += `<span onclick="powerUps.research.use('${type}')" class='research-card' style="width: 275px;float: left;">` // style = "margin-left: 192px; margin-right: -192px;"
@@ -1008,6 +1011,12 @@ const powerUps = {
         return text
     },
     hideStyle: `style="height:auto; border: none; background-color: transparent;"`,
+    constraintText(choose, click) {
+        return `<div class="choose-grid-module card-background" onclick="${click}" onauxclick="${click}"${powerUps.hideStyle}>
+        <div class="card-text">
+        <div class="grid-title"><div class="circle-grid field"></div> &nbsp; ${m.fieldUpgrades[choose].name}</div>
+        ${m.fieldUpgrades[choose].description}</div></div>`
+    },
     gunText(choose, click) {
         const style = localSettings.isHideImages ? powerUps.hideStyle : `style="background-image: url('img/gun/${b.guns[choose].name}.webp');"`
         return `<div class="choose-grid-module card-background" onclick="${click}" onauxclick="${click}" ${style}>
@@ -1607,6 +1616,8 @@ const powerUps = {
                     }
                 }
             }
+            powerUps.spawn(x + 25, y - 25, "ammo", false);
+            if (simulation.difficultyMode > 5) powerUps.spawn(x - 25, y - 50, "ammo", false);
             if (tech.isAddRemoveMaxHealth) {
                 powerUps.spawn(x + 20, y, "tech", false)
                 powerUps.spawn(x - 20, y, "research", false)
@@ -1618,7 +1629,7 @@ const powerUps = {
                 powerUps.spawn(x, y - 40, "heal", false)
             }
             if (tech.isResearchReality) powerUps.spawnDelay("research", 6)
-            if (tech.isBanish) powerUps.spawnDelay("research", 2)
+            if (tech.isBanish) powerUps.spawnDelay("research", 3)
             if (tech.isCouplingNoHit) powerUps.spawnDelay("coupling", 9)
             // if (tech.isRerollDamage) powerUps.spawnDelay("research", 1)
         }
@@ -1642,6 +1653,7 @@ const powerUps = {
             if (b.inventory.length === 0) {
                 powerUps.spawn(x, y, "gun", false); //first gun
             } else if (tech.totalCount === 0) { //first tech
+                powerUps.spawn(x - 22, y - 50, "ammo", false); //some ammo
                 powerUps.spawn(x, y, "tech", false);
             } else if (b.inventory.length === 1) { //second gun or extra ammo
                 if (Math.random() < 0.4) {
@@ -1735,9 +1747,10 @@ const powerUps = {
         }
 
         //count big power ups and small power ups
-        let options = ["heal", "research", "ammo"]
+        let options = ["heal", "research", tech.isBoostReplaceAmmo ? "boost" : "ammo"]
         if (m.coupling) options.push("coupling")
         if (tech.isBoostPowerUps) options.push("boost")
+
         let bigIndexes = []
         let smallIndexes = []
         for (let i = 0; i < powerUp.length; i++) {

@@ -41,23 +41,15 @@ const mobs = {
                 ctx.fillRect(x, y, w, h);
                 ctx.fillStyle = "rgba(255,0,0,0.7)";
                 ctx.fillRect(x, y, w * mob[i].health, h);
+                // if (mob[i].isInvulnerable) {
+                //     ctx.strokeStyle = "rgba(255,255,255,1)";
+                //     ctx.lineWidth = 5
+                //     ctx.strokeRect(x, y, w, h);
+                // }
             }
         }
     },
-    healthBar() {
-        for (let i = 0, len = mob.length; i < len; i++) {
-            if (mob[i].seePlayer.recall && mob[i].showHealthBar) {
-                const h = mob[i].radius * 0.3;
-                const w = mob[i].radius * 2;
-                const x = mob[i].position.x - w / 2;
-                const y = mob[i].position.y - w * 0.7;
-                ctx.fillStyle = "rgba(100, 100, 100, 0.3)";
-                ctx.fillRect(x, y, w, h);
-                ctx.fillStyle = "rgba(255,0,0,0.7)";
-                ctx.fillRect(x, y, w * mob[i].health, h);
-            }
-        }
-    },
+    healthBar() { },
     statusSlow(who, cycles = 60) {
         applySlow(who)
         //look for mobs near the target
@@ -989,7 +981,7 @@ const mobs = {
             },
             explode(mass = this.mass) {
                 if (m.immuneCycle < m.cycle) {
-                    m.damage(Math.min(Math.max(0.02 * Math.sqrt(mass), 0.01), 0.35) * simulation.dmgScale);
+                    m.damage(Math.min(Math.max(0.03 * Math.sqrt(mass), 0.01), 0.4) * simulation.dmgScale);
                     this.isDropPowerUp = false;
                     this.death(); //death with no power up or body
                 }
@@ -1077,7 +1069,11 @@ const mobs = {
                         if (tech.isFarAwayDmg) dmg *= 1 + Math.sqrt(Math.max(500, Math.min(3000, this.distanceToPlayer())) - 500) * 0.0067 //up to 33% dmg at max range of 3000
                         dmg *= this.damageReduction
                         //energy and heal drain should be calculated after damage boosts
-                        if (tech.energySiphon && dmg !== Infinity && this.isDropPowerUp && m.immuneCycle < m.cycle) m.energy += Math.min(this.health, dmg) * tech.energySiphon * level.isReducedRegen
+                        if (tech.energySiphon && this.isDropPowerUp && m.immuneCycle < m.cycle) {
+                            //dmg !== Infinity &&
+                            const regen = Math.min(this.health, dmg) * tech.energySiphon * level.isReducedRegen
+                            if (!isNaN(regen) && regen !== Infinity) m.energy += regen
+                        }
                         dmg /= Math.sqrt(this.mass)
                     }
 
@@ -1137,7 +1133,7 @@ const mobs = {
                         for (let i = 0; i < mob.length; i++) {
                             if (Vector.magnitudeSquared(Vector.sub(this.position, mob[i].position)) < 500000 && mob[i].alive) { //700
                                 if (mob[i].health < 1) {
-                                    mob[i].health += 0.33 + this.isBoss
+                                    mob[i].health += 0.33
                                     if (mob[i].health > 1) mob[i].health = 1
                                     simulation.drawList.push({
                                         x: mob[i].position.x,
@@ -1232,7 +1228,7 @@ const mobs = {
                         });
                     }
 
-                    if (tech.isVerlet && !m.isBodiesAsleep) {
+                    if (tech.isVerlet && !m.isTimeDilated) {
                         requestAnimationFrame(() => {
                             simulation.timePlayerSkip(this.isBoss ? 60 : 30)
                             simulation.loop(); //ending with a wipe and normal loop fixes some very minor graphical issues where things are draw in the wrong locations
@@ -1242,6 +1238,30 @@ const mobs = {
                         m.energy -= 0.05;
                         if (m.energy < 0) m.energy = 0
                     }
+
+
+
+                    if (tech.isRemineralize) {
+                        //reduce mineral percent based on time since last check
+                        const seconds = (simulation.cycle - tech.mineralLastCheck) / 60
+                        tech.mineralLastCheck = simulation.cycle
+                        tech.mineralDamageReduction = 1 - (1 - tech.mineralDamageReduction) * Math.pow(0.9, seconds);
+                        tech.mineralDamage = 1 + (tech.mineralDamage - 1) * Math.pow(0.9, seconds);
+                        //apply mineral damage reduction
+                        tech.mineralDamageReduction *= 0.85
+                    }
+                    if (tech.isDemineralize) {
+                        //reduce mineral percent based on time since last check
+                        const seconds = (simulation.cycle - tech.mineralLastCheck) / 60
+                        tech.mineralLastCheck = simulation.cycle
+                        tech.mineralDamageReduction = 1 - (1 - tech.mineralDamageReduction) * Math.pow(0.9, seconds);
+                        tech.mineralDamage = 1 + (tech.mineralDamage - 1) * Math.pow(0.9, seconds);
+                        //apply mineral damage
+                        tech.mineralDamage *= 1.08
+                    }
+
+
+
                     powerUps.spawnRandomPowerUp(this.position.x, this.position.y);
                     m.lastKillCycle = m.cycle; //tracks the last time a kill was made, mostly used in simulation.checks()
                     mobs.mobDeaths++
@@ -1261,9 +1281,11 @@ const mobs = {
                         } else {
                             for (let i = 0; i < amount; i++) b.spore(this.position)
                         }
-                    } else if (tech.isExplodeMob) {
+                    }
+                    if (tech.isExplodeMob) {
                         b.explosion(this.position, Math.min(700, Math.sqrt(this.mass + 6) * (30 + 60 * Math.random())))
-                    } else if (tech.nailsDeathMob) {
+                    }
+                    if (tech.nailsDeathMob) {
                         b.targetedNail(this.position, tech.nailsDeathMob, 39 + 6 * Math.random())
                     }
                     if (tech.isBotSpawnerReset) {
@@ -1277,7 +1299,7 @@ const mobs = {
                         this.leaveBody = false; // no body since it turned into the bot
                     }
                     if (tech.isMobDeathImmunity) {
-                        const immuneTime = 360
+                        const immuneTime = 300
                         if (m.immuneCycle < m.cycle + immuneTime) m.immuneCycle = m.cycle + immuneTime; //player is immune to damage
                     }
                     if (tech.isAddRemoveMaxHealth) {
@@ -1384,7 +1406,7 @@ const mobs = {
             //replace dead mob with a regular body
             replace(i) {
                 //if there are too many bodies don't turn into blocks to help performance
-                if (this.leaveBody && body.length < mobs.maxMobBody && this.mass < 200 && this.radius > 18) {
+                if (this.leaveBody && body.length < mobs.maxMobBody && this.mass < 200 && this.mass > 2 && this.radius > 18) {
                     let v = Matter.Vertices.hull(Matter.Vertices.clockwiseSort(this.vertices)) //might help with vertex collision issue, not sure
                     if (v.length > 5 && body.length < 35 && Math.random() < 0.25) {
                         const cutPoint = 3 + Math.floor((v.length - 6) * Math.random()) //Math.floor(v.length / 2)
@@ -1397,6 +1419,8 @@ const mobs = {
                         body[len].collisionFilter.category = cat.body;
                         body[len].collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.mob | cat.mobBullet;
                         body[len].classType = "body";
+                        body[len].frictionAir = 0.001
+                        body[len].friction = 0.05
                         Composite.add(engine.world, body[len]); //add to world
 
                         const len2 = body.length;
@@ -1406,6 +1430,8 @@ const mobs = {
                         body[len2].collisionFilter.category = cat.body;
                         body[len2].collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.mob | cat.mobBullet;
                         body[len2].classType = "body";
+                        body[len2].frictionAir = 0.001
+                        body[len2].friction = 0.05
                         Composite.add(engine.world, body[len2]); //add to world
 
                         //large mobs shrink so they don't block paths
@@ -1429,8 +1455,9 @@ const mobs = {
                         body[len].collisionFilter.category = cat.body;
                         body[len].collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.mob | cat.mobBullet;
                         body[len].classType = "body";
+                        body[len].frictionAir = 0.001
+                        body[len].friction = 0.05
                         Composite.add(engine.world, body[len]); //add to world
-
                         //large mobs shrink so they don't block paths
                         if (body[len].mass > 9) {
                             const massLimit = 7 + 4 * Math.random()

@@ -13,7 +13,9 @@ Math.hash = s => {
 // document.getElementById("seed").placeholder = Math.initialSeed = Math.floor(Date.now() % 100000) //random every time:  just the time in milliseconds UTC
 
 window.addEventListener('error', error => {
-    simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${error.message}  <u>${error.filename}:${error.lineno}</u>`)
+    // simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${error.message}  <u>${error.filename}:${error.lineno}</u>`)
+    simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${(error.stack && error.stack.replace(/\n/g, "<br>")) || (error.message + ` <u>${error.filename}:${error.lineno}</u>`)}`);
+
 });
 
 document.getElementById("seed").placeholder = Math.initialSeed = String(Math.floor(Date.now() % 100000))
@@ -26,11 +28,11 @@ Math.seededRandom = function (min = 0, max = 1) { // in order to work 'Math.seed
 // console.log(Math.seed)
 
 
-function shuffle(array) {
+function seededShuffle(array) {
     var currentIndex = array.length,
         temporaryValue,
         randomIndex;
-    // While there remain elements to shuffle...
+    // While there remain elements
     while (0 !== currentIndex) {
         // Pick a remaining element...
         // randomIndex = Math.floor(Math.random() * currentIndex);
@@ -495,7 +497,7 @@ const build = {
 <span style="float: right;"><strong class='color-d'>level</strong> ${((m.dmgScale)).toPrecision(4)}x</span>
 <br><strong class='color-defense'>damage taken</strong> ${(m.defense()).toPrecision(4)}x
 <span style="float: right;"><strong class='color-defense'>level</strong> ${(simulation.dmgScale).toPrecision(4)}x</span>
-<br><strong class='color-h'>health</strong> (${(m.health * 100).toFixed(0)} / ${(m.maxHealth * 100).toFixed(0)})
+<br><strong class='color-h'>health</strong> (${level.isHideHealth ? "null" : (m.health * 100).toFixed(0)} / ${(m.maxHealth * 100).toFixed(0)})
 <span style="float: right;">${powerUps.research.count} ${powerUps.orb.research()}</span>
 <br><strong class='color-f'>energy</strong> (${(m.energy * 100).toFixed(0)} / ${(m.maxEnergy * 100).toFixed(0)}) + (${(m.fieldRegen * 6000 * level.isReducedRegen).toFixed(0)}/s)
 <span style="float: right;">${tech.totalCount} ${powerUps.orb.tech()}</span>
@@ -512,7 +514,7 @@ ${botText}
 <span style="float: right;">mouse (${simulation.mouseInGame.x.toFixed(0)}, ${simulation.mouseInGame.y.toFixed(0)})</span>
 <br>cycles ${m.cycle}
 <span style="float: right;">velocity (${player.velocity.x.toFixed(2)}, ${player.velocity.y.toFixed(2)})</span>
-<br>mobs ${mob.length} (${spawn.pickList[0]},  ${spawn.pickList[0]})
+<br>mobs ${mob.length} (${spawn.pickList[0]},  ${spawn.pickList[1]})
 <span style="float: right;">blocks ${body.length}</span>
 <br>bullets ${bullet.length}
 <span style="float: right;">power ups ${powerUp.length}</span>
@@ -540,7 +542,7 @@ ${simulation.difficultyMode > 4 ? `<details id="constraints-details" style="padd
 <details id = "console-log-details" style="padding: 0 8px;">
 <summary>console log</summary>
 <div class="pause-details">
-    <div class="pause-grid-module" style="background-color: rgba(255,255,255,0.3);font-size: 0.8em;">${document.getElementById("text-log").innerHTML}</div>
+    <div class="pause-grid-module" style="    background-color: #e2e9ec;font-size: 0.8em;">${document.getElementById("text-log").innerHTML}</div>
 </div>
 </details>
 </div>`
@@ -641,7 +643,7 @@ ${simulation.difficultyMode > 4 ? `<details id="constraints-details" style="padd
             }
         }
         document.getElementById("sort-input").addEventListener('keydown', pressEnterSort);
-        requestAnimationFrame(() => { document.getElementById("sort-input").focus(); });
+        // requestAnimationFrame(() => { document.getElementById("sort-input").focus(); });
     },
     sortTech(find, isExperiment = false) {
         const sortKeyword = (a, b) => {
@@ -727,6 +729,8 @@ ${simulation.difficultyMode > 4 ? `<details id="constraints-details" style="padd
                 return 0;
             });
         } else if (find === 'damage') {
+            tech.tech.sort(sortKeyword);
+        } else if (find === 'damage taken') {
             tech.tech.sort(sortKeyword);
         } else if (find === 'defense') {
             tech.tech.sort(sortKeyword);
@@ -952,8 +956,8 @@ ${simulation.difficultyMode > 4 ? `<details id="constraints-details" style="padd
         <button onclick="build.sortTech('fieldtech', true)" class='sort-button'>${powerUps.orb.fieldTech()}</button>
         <button onclick="build.sortTech('damage', true)" class='sort-button'><strong class='color-d'>damage</strong></button>
         <button onclick="build.sortTech('damage taken', true)" class='sort-button'><strong style="letter-spacing: 1px;font-weight: 100;">dmg taken</strong></button>
-        <button onclick="build.sortTech('heal')" class='sort-button'><strong class='color-h'>heal</strong></button>
-        <button onclick="build.sortTech('energy')" class='sort-button'><strong class='color-f'>energy</strong></button>
+        <button onclick="build.sortTech('heal', true)" class='sort-button'><strong class='color-h'>heal</strong></button>
+        <button onclick="build.sortTech('energy', true)" class='sort-button'><strong class='color-f'>energy</strong></button>
         <input type="search" id="sort-input" style="width: 7.5em;font-size: 0.6em;color:#000;" placeholder="sort by" />
         <button onclick="build.sortTech('input', true)" class='sort-button' style="border-radius: 0em;border: 1.5px #000 solid;font-size: 0.6em;" value="damage">sort</button>
     </div>
@@ -1064,8 +1068,7 @@ ${simulation.difficultyMode > 4 ? `<details id="constraints-details" style="padd
         b.activeGun = null;
         b.inventoryGun = 0;
         simulation.makeGunHUD();
-        tech.setupAllTech();
-        m.resetSkin();
+        tech.resetAllTech();
         build.populateGrid();
         document.getElementById("field-0").classList.add("build-field-selected");
         document.getElementById("experiment-grid").style.display = "grid"
@@ -1166,12 +1169,14 @@ ${simulation.difficultyMode > 4 ? `<details id="constraints-details" style="padd
 function openExperimentMenu() {
     document.getElementById("experiment-button").style.display = "none";
     document.getElementById("training-button").style.display = "none";
+    document.getElementById("start-button").style.display = "none";
     const el = document.getElementById("experiment-grid")
     el.style.display = "grid"
     document.body.style.overflowY = "scroll";
     document.body.style.overflowX = "hidden";
     document.getElementById("info").style.display = 'none'
     build.reset();
+
 }
 
 //record settings so they can be reproduced in the experimental menu
@@ -1201,6 +1206,8 @@ const input = {
     left: false,
     right: false,
     isPauseKeyReady: true,
+    // isMouseInside: true,
+    // lastDown: null,
     key: {
         fire: "KeyF",
         field: "Space",
@@ -1375,6 +1382,7 @@ window.addEventListener("keyup", function (event) {
 });
 
 window.addEventListener("keydown", function (event) {
+    // input.lastDown = event.code
     // console.log(event.code)
     switch (event.code) {
         case input.key.right:
@@ -1414,11 +1422,13 @@ window.addEventListener("keydown", function (event) {
                     build.pauseGrid()
 
                 } else if (simulation.paused) {
-                    build.unPauseGrid()
-                    simulation.paused = false;
-                    // level.levelAnnounce();
-                    document.body.style.cursor = "none";
-                    requestAnimationFrame(cycle);
+                    if (document.activeElement !== document.getElementById('sort-input')) {
+                        build.unPauseGrid()
+                        simulation.paused = false;
+                        // level.levelAnnounce();
+                        document.body.style.cursor = "none";
+                        requestAnimationFrame(cycle);
+                    }
                 } else {  //if (!tech.isNoDraftPause)
                     simulation.paused = true;
                     build.pauseGrid()
@@ -1540,7 +1550,7 @@ window.addEventListener("keydown", function (event) {
             }
             break
     }
-    if (b.inventory.length > 1 && !simulation.testing && !tech.isGunCycle) {
+    if (b.inventory.length > 1 && !simulation.testing && !(tech.isGunChoice || tech.isGunCycle)) {
         switch (event.code) {
             case "Digit1":
                 simulation.switchToGunInInventory(0);
@@ -1727,11 +1737,12 @@ document.body.addEventListener("mouseenter", (e) => { //prevents mouse getting s
         input.fire = false;
     }
 
-    if (e.button === 3) {
-        input.field = true;
-    } else {
-        input.field = false;
-    }
+    // if (e.button === 3) {
+    //     input.field = true;
+    // } else {
+    //     input.field = false;
+    // }
+    // input.isMouseInside = true
 });
 document.body.addEventListener("mouseleave", (e) => { //prevents mouse getting stuck when leaving the window
     if (e.button === 1) {
@@ -1740,11 +1751,12 @@ document.body.addEventListener("mouseleave", (e) => { //prevents mouse getting s
         input.fire = false;
     }
 
-    if (e.button === 3) {
-        input.field = true;
-    } else {
-        input.field = false;
-    }
+    // if (e.button === 3) {
+    //     input.field = true;
+    // } else {
+    //     input.field = false;
+    // }
+    // input.isMouseInside = false
 });
 
 document.body.addEventListener("wheel", (e) => {

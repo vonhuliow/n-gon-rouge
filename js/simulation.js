@@ -2,152 +2,152 @@
 //*********************************************************************
 const simulation = {
     loop() { }, //main game loop, gets set to normal or testing loop
-    normalLoop() {
-        try {
-            simulation.gravity();
-            Engine.update(engine, simulation.delta);
-            simulation.wipe();
-            simulation.textLog();
-            if (m.onGround) {
-                m.groundControl()
-            } else {
-                m.airControl()
-            }
-            m.move();
-            m.look();
-            simulation.camera();
-            level.custom();
-            powerUps.do();
-            mobs.draw();
-            simulation.draw.cons();
-            simulation.draw.body();
-            if (!m.isBodiesAsleep) mobs.loop();
-            mobs.healthBar();
-            m.draw();
-            m.hold();
-            level.customTopLayer();
-            simulation.draw.drawMapPath();
-            b.fire();
-            b.bulletRemove();
-            b.bulletDraw();
-            if (!m.isBodiesAsleep) b.bulletDo();
-            simulation.drawCircle();
-            simulation.runEphemera();
-            ctx.restore();
-        } catch (error) {
-            simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${(error.stack && error.stack.replace(/\n/g, "<br>")) || (error.message + ` <u>${error.filename}:${error.lineno}</u>`)}`);
-        } finally {
-            simulation.drawCursor();
-        }
-    },
-    testingLoop() {
-        try {
-            simulation.gravity();
-            Engine.update(engine, simulation.delta);
-            simulation.wipe();
-            simulation.textLog();
-            if (m.onGround) {
-                m.groundControl()
-            } else {
-                m.airControl()
-            }
-            m.move();
-            m.look();
-            simulation.camera();
-            level.custom();
-            m.draw();
-            m.hold();
-            level.customTopLayer();
-            simulation.draw.wireFrame();
-            if (input.fire && m.fireCDcycle < m.cycle) {
-                m.fireCDcycle = m.cycle + 15; //fire cooldown       
-                for (let i = 0, len = mob.length; i < len; i++) {
-                    if (Vector.magnitudeSquared(Vector.sub(mob[i].position, simulation.mouseInGame)) < mob[i].radius * mob[i].radius) {
-                        console.log(mob[i])
-                    }
-                }
-            }
-            simulation.draw.cons();
-            simulation.draw.testing();
-            simulation.drawCircle();
-            simulation.runEphemera();
-            simulation.constructCycle()
-        } catch (error) {
-            simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${(error.stack && error.stack.replace(/\n/g, "<br>")) || (error.message + ` <u>${error.filename}:${error.lineno}</u>`)}`);
-        } finally {
-            ctx.restore();
-            simulation.testingOutput();
-            simulation.drawCursor();
-        }
-    },
     // normalLoop() {
-    //     simulation.gravity();
-    //     Engine.update(engine, simulation.delta);
-    //     simulation.wipe();
-    //     simulation.textLog();
-    //     if (m.onGround) {
-    //         m.groundControl()
-    //     } else {
-    //         m.airControl()
+    //     try {
+    //         simulation.gravity();
+    //         Engine.update(engine, simulation.delta);
+    //         simulation.wipe();
+    //         simulation.textLog();
+    //         if (m.onGround) {
+    //             m.groundControl()
+    //         } else {
+    //             m.airControl()
+    //         }
+    //         m.move();
+    //         m.look();
+    //         simulation.camera();
+    //         level.custom();
+    //         powerUps.do();
+    //         mobs.draw();
+    //         simulation.draw.cons();
+    //         simulation.draw.body();
+    //         if (!m.isTimeDilated) mobs.loop();
+    //         mobs.healthBar();
+    //         m.draw();
+    //         m.hold();
+    //         level.customTopLayer();
+    //         simulation.draw.drawMapPath();
+    //         b.fire();
+    //         b.bulletRemove();
+    //         b.bulletDraw();
+    //         if (!m.isTimeDilated) b.bulletDo();
+    //         simulation.drawCircle();
+    //         simulation.runEphemera();
+    //         ctx.restore();
+    //     } catch (error) {
+    //         simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${(error.stack && error.stack.replace(/\n/g, "<br>")) || (error.message + ` <u>${error.filename}:${error.lineno}</u>`)}`);
+    //     } finally {
+    //         simulation.drawCursor();
     //     }
-    //     m.move();
-    //     m.look();
-    //     simulation.camera();
-    //     level.custom();
-    //     powerUps.do();
-    //     mobs.draw();
-    //     simulation.draw.cons();
-    //     simulation.draw.body();
-    //     if (!m.isBodiesAsleep) mobs.loop();
-    //     mobs.healthBar();
-    //     m.draw();
-    //     m.hold();
-    //     level.customTopLayer();
-    //     simulation.draw.drawMapPath();
-    //     b.fire();
-    //     b.bulletRemove();
-    //     b.bulletDraw();
-    //     if (!m.isBodiesAsleep) b.bulletDo();
-    //     simulation.drawCircle();
-    //     simulation.runEphemera();
-    //     ctx.restore();
-    //     simulation.drawCursor();
     // },
     // testingLoop() {
-    //     simulation.gravity();
-    //     Engine.update(engine, simulation.delta);
-    //     simulation.wipe();
-    //     simulation.textLog();
-    //     if (m.onGround) {
-    //         m.groundControl()
-    //     } else {
-    //         m.airControl()
-    //     }
-    //     m.move();
-    //     m.look();
-    //     simulation.camera();
-    //     level.custom();
-    //     m.draw();
-    //     m.hold();
-    //     level.customTopLayer();
-    //     simulation.draw.wireFrame();
-    //     if (input.fire && m.fireCDcycle < m.cycle) {
-    //         m.fireCDcycle = m.cycle + 15; //fire cooldown       
-    //         for (let i = 0, len = mob.length; i < len; i++) {
-    //             if (Vector.magnitudeSquared(Vector.sub(mob[i].position, simulation.mouseInGame)) < mob[i].radius * mob[i].radius) {
-    //                 console.log(mob[i])
+    //     try {
+    //         simulation.gravity();
+    //         Engine.update(engine, simulation.delta);
+    //         simulation.wipe();
+    //         simulation.textLog();
+    //         if (m.onGround) {
+    //             m.groundControl()
+    //         } else {
+    //             m.airControl()
+    //         }
+    //         m.move();
+    //         m.look();
+    //         simulation.camera();
+    //         level.custom();
+    //         m.draw();
+    //         m.hold();
+    //         level.customTopLayer();
+    //         simulation.draw.wireFrame();
+    //         if (input.fire && m.fireCDcycle < m.cycle) {
+    //             m.fireCDcycle = m.cycle + 15; //fire cooldown       
+    //             for (let i = 0, len = mob.length; i < len; i++) {
+    //                 if (Vector.magnitudeSquared(Vector.sub(mob[i].position, simulation.mouseInGame)) < mob[i].radius * mob[i].radius) {
+    //                     console.log(mob[i])
+    //                 }
     //             }
     //         }
+    //         simulation.draw.cons();
+    //         simulation.draw.testing();
+    //         simulation.drawCircle();
+    //         simulation.runEphemera();
+    //         simulation.constructCycle()
+    //     } catch (error) {
+    //         simulation.inGameConsole(`<strong style='color:red;'>ERROR:</strong> ${(error.stack && error.stack.replace(/\n/g, "<br>")) || (error.message + ` <u>${error.filename}:${error.lineno}</u>`)}`);
+    //     } finally {
+    //         ctx.restore();
+    //         simulation.testingOutput();
+    //         simulation.drawCursor();
     //     }
-    //     simulation.draw.cons();
-    //     simulation.draw.testing();
-    //     simulation.drawCircle();
-    //     simulation.runEphemera();
-    //     simulation.constructCycle()
-    //     ctx.restore();
-    //     simulation.testingOutput();
-    //     simulation.drawCursor();
     // },
+    normalLoop() {
+        simulation.gravity();
+        Engine.update(engine, simulation.delta);
+        simulation.wipe();
+        simulation.textLog();
+        if (m.onGround) {
+            m.groundControl()
+        } else {
+            m.airControl()
+        }
+        m.move();
+        m.look();
+        simulation.camera();
+        level.custom();
+        powerUps.do();
+        mobs.draw();
+        simulation.draw.cons();
+        simulation.draw.body();
+        if (!m.isTimeDilated) mobs.loop();
+        mobs.healthBar();
+        m.draw();
+        m.hold();
+        level.customTopLayer();
+        simulation.draw.drawMapPath();
+        b.fire();
+        b.bulletRemove();
+        b.bulletDraw();
+        if (!m.isTimeDilated) b.bulletDo();
+        simulation.drawCircle();
+        simulation.runEphemera();
+        ctx.restore();
+        simulation.drawCursor();
+    },
+    testingLoop() {
+        simulation.gravity();
+        Engine.update(engine, simulation.delta);
+        simulation.wipe();
+        simulation.textLog();
+        if (m.onGround) {
+            m.groundControl()
+        } else {
+            m.airControl()
+        }
+        m.move();
+        m.look();
+        simulation.camera();
+        level.custom();
+        m.draw();
+        m.hold();
+        level.customTopLayer();
+        simulation.draw.wireFrame();
+        if (input.fire && m.fireCDcycle < m.cycle) {
+            m.fireCDcycle = m.cycle + 15; //fire cooldown       
+            for (let i = 0, len = mob.length; i < len; i++) {
+                if (Vector.magnitudeSquared(Vector.sub(mob[i].position, simulation.mouseInGame)) < mob[i].radius * mob[i].radius) {
+                    console.log(mob[i])
+                }
+            }
+        }
+        simulation.draw.cons();
+        simulation.draw.testing();
+        simulation.drawCircle();
+        simulation.runEphemera();
+        simulation.constructCycle()
+        ctx.restore();
+        simulation.testingOutput();
+        simulation.drawCursor();
+    },
     isTimeSkipping: false,
     timeSkip(cycles = 60) {
         simulation.isTimeSkipping = true;
@@ -183,10 +183,10 @@ const simulation = {
             Engine.update(engine, simulation.delta);
             // level.custom();
             // level.customTopLayer();
-            if (!m.isBodiesAsleep) mobs.loop();
+            if (!m.isTimeDilated) mobs.loop();
             if (m.fieldMode !== 7) m.hold();
             b.bulletRemove();
-            if (!m.isBodiesAsleep) b.bulletDo();
+            if (!m.isTimeDilated) b.bulletDo();
             simulation.runEphemera();
         }
         simulation.isTimeSkipping = false;
@@ -223,7 +223,7 @@ const simulation = {
     //     mobs.draw();
     //     simulation.draw.cons();
     //     simulation.draw.body();
-    //     if (!m.isBodiesAsleep) {
+    //     if (!m.isTimeDilated) {
     //         // mobs.loop();
     //     }
     //     mobs.healthBar();
@@ -235,7 +235,7 @@ const simulation = {
     //     b.fire();
     //     b.bulletRemove();
     //     b.bulletDraw();
-    //     if (!m.isBodiesAsleep) b.bulletDo();
+    //     if (!m.isTimeDilated) b.bulletDo();
     //     simulation.drawCircle();
     //     // simulation.clip();
     //     ctx.restore();
@@ -425,7 +425,7 @@ const simulation = {
             if (simulation.drawList[i].time) {
                 simulation.drawList[i].time--;
             } else {
-                if (!m.isBodiesAsleep) simulation.drawList.splice(i, 1); //remove when timer runs out
+                if (!m.isTimeDilated) simulation.drawList.splice(i, 1); //remove when timer runs out
             }
         }
     },
@@ -496,6 +496,32 @@ const simulation = {
         }
         simulation.boldActiveGunHUD();
     },
+    // updateTechHUD() {
+    //     let text = ""
+    //     for (let i = 0, len = tech.tech.length; i < len; i++) { //add tech
+    //         if (tech.tech[i].isLost) {
+    //             if (text) text += "<br>" //add a new line, but not on the first line
+    //             text += `<span style="text-decoration: line-through;">${tech.tech[i].name}</span>`
+    //         } else if (tech.tech[i].count > 0 && !tech.tech[i].isInstant) {
+    //             if (text) text += "<br>" //add a new line, but not on the first line
+    //             text += `<span id = "${tech.tech[i].name}">${tech.tech[i].name}${tech.tech[i].count > 1 ? ` (${tech.tech[i].count}x)` : ""}</span>`
+
+    //             // document.getElementById(tech.tech[i].name).style.fontWeight = 'bold';
+    //             // simulation.ephemera.push({
+    //             //     name: "bold",
+    //             //     count: 180,
+    //             //     do() {
+    //             //         this.count--
+    //             //         if (this.count < 0) {
+    //             //             simulation.removeEphemera(this.name)
+    //             //             if (document.getElementById(tech.tech[i].name)) document.getElementById(tech.tech[i].name).style.fontWeight = 'normal';
+    //             //         }
+    //             //     }
+    //             // })
+    //         }
+    //     }
+    //     document.getElementById("right-HUD").innerHTML = text
+    // },
     updateTechHUD() {
         let text = ""
         for (let i = 0, len = tech.tech.length; i < len; i++) { //add tech
@@ -532,14 +558,14 @@ const simulation = {
         }
     },
     nextGun() {
-        if (b.inventory.length > 1 && !tech.isGunCycle) {
+        if (b.inventory.length > 1 && !(tech.isGunCycle || tech.isGunChoice)) {
             b.inventoryGun++;
             if (b.inventoryGun > b.inventory.length - 1) b.inventoryGun = 0;
             simulation.switchGun();
         }
     },
     previousGun() {
-        if (b.inventory.length > 1 && !tech.isGunCycle) {
+        if (b.inventory.length > 1 && !(tech.isGunCycle || tech.isGunChoice)) {
             b.inventoryGun--;
             if (b.inventoryGun < 0) b.inventoryGun = b.inventory.length - 1;
             simulation.switchGun();
@@ -712,7 +738,7 @@ const simulation = {
             mouseMove = mouseMoveDefault
         }
     },
-    translatePlayerAndCamera(where) {
+    translatePlayerAndCamera(where, isTranslateBots = true) {
         //infinite falling.  teleport to sky after falling
         const before = { x: player.position.x, y: player.position.y, }
         Matter.Body.setPosition(player, { x: where.x, y: where.y });
@@ -728,20 +754,21 @@ const simulation = {
         //is there a reason to update m.pos here?
         // m.pos.x = player.position.x;
         // m.pos.y = playerBody.position.y - m.yOff;
-
-        for (let i = 0; i < bullet.length; i++) {
-            if (bullet[i].botType) {
-                if (Vector.magnitudeSquared(Vector.sub(bullet[i].position, player.position)) > 1000000) { //far away bots teleport to player
-                    Matter.Body.setPosition(bullet[i], Vector.add(player.position, { x: 250 * (Math.random() - 0.5), y: 250 * (Math.random() - 0.5) }));
-                    Matter.Body.setVelocity(bullet[i], { x: 0, y: 0 });
-                } else { //close bots maintain relative distance to player on teleport
-                    Matter.Body.setPosition(bullet[i], Vector.sub(bullet[i].position, change));
+        if (isTranslateBots) {
+            for (let i = 0; i < bullet.length; i++) {
+                if (bullet[i].botType) {
+                    if (Vector.magnitudeSquared(Vector.sub(bullet[i].position, player.position)) > 1000000) { //far away bots teleport to player
+                        Matter.Body.setPosition(bullet[i], Vector.add(player.position, { x: 250 * (Math.random() - 0.5), y: 250 * (Math.random() - 0.5) }));
+                        Matter.Body.setVelocity(bullet[i], { x: 0, y: 0 });
+                    } else { //close bots maintain relative distance to player on teleport
+                        Matter.Body.setPosition(bullet[i], Vector.sub(bullet[i].position, change));
+                    }
                 }
             }
         }
     },
     setupCamera() { //makes the camera not scroll after changing locations
-        // //only works if velocity is zero
+        // only works if velocity is zero
         m.pos.x = player.position.x;
         m.pos.y = playerBody.position.y - m.yOff;
         const scale = 0.8;
@@ -763,6 +790,20 @@ const simulation = {
         ctx.scale(simulation.zoom / simulation.edgeZoomOutSmooth, simulation.zoom / simulation.edgeZoomOutSmooth); //zoom in once centered
         ctx.translate(-canvas.width2 + m.transX, -canvas.height2 + m.transY); //translate
         // ctx.translate(-canvas.width2 + m.transX - player.velocity.x, -canvas.height2 + m.transY + player.velocity.y); //translate
+        //calculate in game mouse position by undoing the zoom and translations
+        simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+        simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+    },
+    //for moving camera away from player
+    setCameraPosition(x, y, zoom = 1) {
+        ctx.restore();
+        ctx.save();
+        ctx.translate(canvas.width2, canvas.height2); //center
+        ctx.scale(zoom, zoom); //zoom in once centered
+        ctx.translate(- x, - y); //center
+
+        // ctx.scale(simulation.zoom / simulation.edgeZoomOutSmooth, simulation.zoom / simulation.edgeZoomOutSmooth); //zoom in once centered
+        // ctx.translate(-canvas.width2, -canvas.height2); //translate
         //calculate in game mouse position by undoing the zoom and translations
         simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
         simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
@@ -836,7 +877,7 @@ const simulation = {
                 bodies[i].force.y += bodies[i].mass * magnitude;
             }
         }
-        if (!m.isBodiesAsleep) {
+        if (!m.isTimeDilated) {
             addGravity(powerUp, simulation.g);
             addGravity(body, simulation.g);
         }
@@ -864,6 +905,8 @@ const simulation = {
         document.getElementById("experiment-button").style.opacity = "0";
         document.getElementById("training-button").style.display = "inline"
         document.getElementById("training-button").style.opacity = "0";
+        document.getElementById("start-button").style.display = "inline"
+        document.getElementById("start-button").style.opacity = "0";
         document.getElementById("experiment-grid").style.display = "none"
         document.getElementById("pause-grid-left").style.display = "none"
         document.getElementById("pause-grid-right").style.display = "none"
@@ -877,6 +920,7 @@ const simulation = {
         setTimeout(() => {
             document.getElementById("experiment-button").style.opacity = "1";
             document.getElementById("training-button").style.opacity = "1";
+            document.getElementById("start-button").style.opacity = "1";
             document.getElementById("info").style.opacity = "1";
             document.getElementById("splash").style.opacity = "1";
         }, 200);
@@ -903,6 +947,7 @@ const simulation = {
         document.getElementById("info").style.display = "none";
         document.getElementById("experiment-button").style.display = "none";
         document.getElementById("training-button").style.display = "none";
+        document.getElementById("start-button").style.display = "none";
         // document.getElementById("experiment-button").style.opacity = "0";
         document.getElementById("splash").onclick = null; //removes the onclick effect so the function only runs once
         document.getElementById("splash").style.display = "none"; //hides the element that spawned the function
@@ -942,14 +987,13 @@ const simulation = {
         } else {
             Composite.add(engine.world, [player])
         }
-        shuffle(level.constraint)
+        seededShuffle(level.constraint)
         level.populateLevels()
         input.endKeySensing();
         simulation.ephemera = []
         powerUps.powerUpStorage = []
-        tech.setupAllTech(); //sets tech to default values
+        tech.resetAllTech(); //sets tech to default values
         b.resetAllGuns();
-        tech.duplication = 0;
         for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
             if (b.guns[i].name === "laser") b.guns[i].chooseFireMethod()
             if (b.guns[i].name === "nail gun") b.guns[i].chooseFireMethod()
@@ -957,15 +1001,7 @@ const simulation = {
             if (b.guns[i].name === "harpoon") b.guns[i].chooseFireMethod()
             if (b.guns[i].name === "foam") b.guns[i].chooseFireMethod()
         }
-        tech.dynamoBotCount = 0;
-        tech.nailBotCount = 0;
-        tech.laserBotCount = 0;
-        tech.orbitBotCount = 0;
-        tech.foamBotCount = 0;
-        tech.soundBotCount = 0;
-        tech.boomBotCount = 0;
-        tech.plasmaBotCount = 0;
-        tech.missileBotCount = 0;
+        b.zeroBotCount()
 
         m.isSwitchingWorlds = false
         simulation.isChoosing = false;
@@ -996,7 +1032,7 @@ const simulation = {
         simulation.makeGunHUD();
         simulation.lastLogTime = 0;
         mobs.mobDeaths = 0
-
+        level.isFlipped = false
         level.onLevel = 0;
         level.levelsCleared = 0;
         level.updateDifficulty()
@@ -1043,12 +1079,12 @@ const simulation = {
             simulation.ephemera.push({
                 name: "dmgDefBars", count: 0, do() {
                     if (!(m.cycle % 15)) { //4 times a second
-                        const defense = m.defense()             //update defense bar
+                        const defense = m.defense() //* simulation.dmgScale           //update defense bar
                         if (m.lastCalculatedDefense !== defense) {
                             document.getElementById("defense-bar").style.width = Math.floor(300 * m.maxHealth * (1 - defense)) + "px";
                             m.lastCalculatedDefense = defense
                         }
-                        const damage = tech.damageFromTech()             //update damage bar
+                        const damage = tech.damageFromTech() //* m.dmgScale           //update damage bar
                         if (m.lastCalculatedDamage !== damage) {
                             document.getElementById("damage-bar").style.height = Math.floor((Math.atan(0.25 * damage - 0.25) + 0.25) * 0.53 * canvas.height) + "px";
                             m.lastCalculatedDamage = damage

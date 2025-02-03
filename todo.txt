@@ -1,85 +1,130 @@
 ******************************************************** NEXT PATCH **************************************************
 
-tech: Halbach array - throwing a block will also throw other nearby blocks
+pilot wave effect rework
+  it's easier to surf on blocks controlled by pilot wave
+    pilot wave secret combo spawns blocks that are easier to surf on: long and thin
+  pilot wave location resets to player when off
+  pilot wave hitting map no longer shrinks, it just will not enter map
+  field speed slows down with total block mass in field
+  energy drain
+    1x energy regen disabled when field is active
+    2x passive regen drained when out of line of sight of player
+    energy drain that scales with size and acceleration of blocks in field
+  added graphical flicker when field is out of line of sight
+  a few more bosses now interact with blocks and can take damage
+  prevented field from disabling when mouse goes off screen
+    I don't expect any bugs from this, but maybe...
 
-tech non-renewables now spawns ammo, but ammo can't be picked up
-grenade tech that cause multiple explosions have less knock back for mobs
-constraint:  0->0.5x healing
-wormhole 7->8% duplication
-many worlds takes a few frames between each tech given
+ghoster mobs have 2x->1.5x extra density and health
+exploder mobs no longer have a chance for a shield
+  2.5x explode damage, 1.3x health
+  added a red aura to show they explode on contact
+spawnerBossCulture changed visual look to be a flashing transparent red outline
+  2x explode damage
+laser mobs no longer explode, 1.5x density/mass
 
-bug fixes
- harpoon ammo gain on autonomous defense fixed
- constraints are properly randomized again
 
 ******************************************************** BUGS ********************************************************
-
-  couple reports of crashes from many-worlds
-    around level 5-7
-    for me crash on factory level 7
-    might be linked to having all the guns?
-    the crash was in matter.js something about collisions and undefined
-      maybe too many things were spawned in the same spot?
-    also occurs when you just gain many random tech in testing mode
-
-figure out why seeded random isn't making runs the same:
-  shuffle is being used for a wide variety of things that don't need a seeded random
-    make two shuffle functions?
-  check which of these is working
-    level order
-    is flipped
-    constraint order
-    mob type order
-    boss order
-    gun, field, tech options
-  make field options offered precalculated so it doesn't depend on player choices?
-  generate all constraints at the start of the game
-    doesn't seem to be determined by the seed...
-    display future constraints in pause menu?
-
-at start of level game go stuck in pause state
-  no crash or bug report
-  occur level 8
-  after 2 levels of sending power ups to next level
-  auto drones grabbed a power up and game froze while in power up mode
-  running code to exit pause kinda worked
-
-ants marching outline on splash screen doesn't sync right on safari
 
 player can become crouched while not touching the ground if they exit the ground while crouched
 
 *********************************************************** TODO *****************************************************
 
-make a text orb for JUNK text to make JUNK more clear
+tech - while player is in field increase field radius and no energy drain
+  check if player is inside field
+    m.fieldUpgrades[8].collider.isPLayerInField = false
+    fix   tech.isSurfing && m.fieldUpgrades[8].collider.isPLayerInField
 
-extended vertical flip to edge cases:
-  !!stored circular graphics     simulation.drawList.push
+tech - get a benefit while surfing on a block inside the pilot wave field
+  defense?  damage?
+tech - benefit if you haven't killed any mobs on this level
+tech - benefit in the first 20 seconds of the level
 
-new level based laser element
-  !!update new version into other levels
+plasma globe - it should not explode on map contact, but instead shrink?
+  only explode on mouse release
+
+mob - moves around, but then stops and makes porcupine spikes for 2 seconds, then moves again.
+  maybe use hopper movement?
+
+soft body boss?
+  search    softBody(x, y, angle = 0, isAttached = true, len = 15, radius = 20, stiffness = 1, damping = 1) {
+
+use ←↑→↓↖↗↘↙ combos to allow fields to have special actions
+  how to limit spam?
+     on cooldown
+      timer or once per level
+     energy cost
+     research cost
+     toggle modes
+  combos are listed in white text in field description, and console message when getting field
+    shows up on highlight, and mouse over in experiment mode
+  field ideas:
+    standing wave
+      push mobs away are any distance
+      pull mobs towards you
+    perfect diamagnetism
+    negative mass
+    molecular assembler - done
+    plasma torch
+      move around like you have recoil, move kinda fast so it's hard to control
+        like form recoil but fast
+    time dilation
+    metamaterial cloaking
+    pilot wave - done
+    wormhole
+      toggle bullets entering with wormholes
+        and player??
+      shoot out all the blocks that were sucked in this level (maybe cap at like 10?, cap with energy spent to fire)
+        are block sizes stored properly?  because they shrink before they get eaten...
+          store vertices on the body object if one does already exists
+          after eating store the saved vertices
+        where to fire blocks from and in what direction?
+          target mobs?
+          fire from player (and draw a wormhole looking graphic)
+    grappling hook
+
+new level idea: large map sized blocks that can't be destroyed that the player walks on as a part of the level
+  eventually the blocks fall
+    after fall level progresses to a phase 2 to clean up the blocks or leave them
+    should bosses be killed by falling blocks??
+  how to avoid the large block vibrating/dancing on tiny block issue
+
+new level idea:  escort mission
+  player has to stay near something that moves slowly through the level
+    maybe only a zone around the escort is safe
+      safe from?
+        lasers
+        slime
+        radiation
+    use line of site vision?
+    is it going to feel too slow?
+    where to put in level order?
+      random option instead of reactor?
+      normal level?
+      4th hard level?
+        already too many hard options
+          you could put in 2 hard levels in the level list
+    make the style look like substructure, that level looks great
+      use the motion sense lasers
+
+  
+tech:  - remove the research costs of all tech
+  there's about 15 tech with a research cost
+!!conformal - similar rules for small and big scales  linked to holographic principle
+!!holonomy - parallel transport of a vector leads to movement (applies to curved space)
+  when far away from your wormhole regenerate 1% of your max energy per second
+  when far away from your wormhole reduce damage taken
+  heal last hit damage after enter wormhole
+!!quasar - plasma torch from both ends of wormhole
+  only after wormhole eats a block fire?
+    or just increase plasma length after eating block?
 
 procedural animation 
   https://www.youtube.com/watch?v=qlfh_rv6khY
 
-not implemented random constraint ideas________________________
-  mob death spawns something
-    mob bullets
-  bosses heals nearby mobs
-  ammo power ups give 0.7x ammo
-  2x research costs
-  mobs slowly regen health
-  exit door takes 10x time to open,
-    and while door is opening (ghosters, suckers) attack?
-  can't have more then 15 bullets
-    how to code?
-  remove 2 random tech and return them next level
-
 tech: ice-VII - 1.5x duration for ice-IX
-
 tech:  - freezing grenades/explosions
-
 tech:  - when you get a bot, get a second bot
-
 tech:  - after killing a Boss
   heal to full
   gain 3x damage for the rest of the level
@@ -117,12 +162,6 @@ tech: atomic pile - lose 1 health if you are above the maximum energy
   do damage?
   plasma torch tech?
 
-figure out how to put instructions for controls in background on initial level
-  mouse smooth makes the text position jitter when it moves sub pixels
-    hide the jitter with artificial jitter to make it seem intentional
-      make it look like the instructions are on a fuzzy TV screen
-    when player presses move buttons highlight the box/letter for those buttons
-  
 make player mass an adjustable var in the skin
   does this mess with jump height or air control?
 increase mass and movement speed at the same time
@@ -132,10 +171,6 @@ increase mass and movement speed at the same time
   possible player.mass bad interactions
     grapple
 
-rework energy and health HUD
-  make both diegetic?
-    how?  not sure there is a good way to do this...
-
 tech - after a power up is duplicated
   update text to random effect after choosing tech, or after each trigger, or on first display of tech
   pick 1 effect at random
@@ -143,7 +178,7 @@ tech - after a power up is duplicated
     summon JUNK bots for 10 seconds
     2x current energy
     gain 1.01x damage permanently
-  cool name: 
+  cool name:
 
 after picking up heals gain ____
   0.1x damage taken for 12s
@@ -159,42 +194,8 @@ tech - getting caught in an explosion gives you _____
   damage for 10 seconds?
   heals
 
-tech - limit total number of tech to like 10?
-
-tech - destroying blocks gives _____
-
-removeJunkTechFromPool doesn't seem to remove the correct amount
-
-wormholes that end inside wall check to see if the space before the wall is safe and end there instead
-  can use laser code
-
-tech:  - (1 + 0.01)x for each tech, gun, field you've picked up
-  scales with born rule, duplication, remove tech
-
 explosions have a chance to spawn spores
   infinite feedback loop with spores that explode?
-
-make sure healing isn't effected by simulation.healScale
-  instead heal orb size should be scaled
-    but the ratio between size and heal shouldn't be effected
-
-boss - tracks the position, velocity, angle of power ups, blocks, and bullets it fires
-  reactor only?
-  will rewind time
-    after damage threshold?
-  does it track player bullets? 
-
-button/switch input ideas from Cocoon game
-  pick up blocks that have a rubber band attached to a sliding switch
-    as player moves the vector direction of the rubber band will move the slider left or right
-    use this to open doors, move larger blocks, ...
-  switches that toggle left, right when player presses input.field while standing nearby
-    replace laser off on switch?
-    platform that rises up when player presses input.field while standing
-  How to instruct player to use field on these?
-    color with field #0ff
-    draw field effect
-    make it still functional without the field button
 
 tech - getting a new gun also gives you 2 random tech for that gun
   or a field?
@@ -218,6 +219,31 @@ improve new player experience
 -40% foam ammo gain
 When foam is in an explosion it also explodes with size proportional to the size of the foam bubble
 Requires foam, explosion source, not aerogel
+
+new level similar to ash tray maze
+  !!not sure how this works with theme (most levels are locations that have industrial stuff)
+  this might work as another line of sight level?
+    could be fine without line of sight if rooms don't exist until they open up?
+  where to put in game sequence?
+  watch a run through   https://www.youtube.com/watch?v=nudSXUMBEV4
+    close off doors as player gets close
+    open up doors as player gets close
+    holes in the floor
+    slide large walls back to open up levels below
+    show a zone, then close it off, but eventually reveal it later
+    rise up pillars during combat
+    small maze rooms, 1-2 really huge rooms, long corridors, medium combat rooms
+  triggers for changes
+    clearing mobs in a zone
+      or time based if player is too slow
+    player gets close to a zone
+  make map elements shift around as player moves through the game
+    start with map elements filling everywhere and slow open up new zones
+  need a cool way to animate adding and removing map elements
+    maybe for the entire level redraw the map every 15 cycles?
+      simulation.draw.setPaths() //update map graphics
+    slide map around
+    small map squares that each add in sequentially
 
 Cosmological natural selection:  do something with black holes
   spawn black hole mobs
@@ -341,16 +367,6 @@ make a lemming that walks until it hits a wall and then turns around robotically
   body or mob?
   can't be killed?
 
-use ephemera to replace some bad code
-  JUNK?
-  request animation stuff
-  simulation checks
-    damage and defense bars
-      disable and enable ephemera with settings
-
-perfect diamagnatism - invulnerable while field is active?
-  also drain energy while field is active?
-
 mobs attack mines
   mines periodically set all mobs to have player location to be the mine
     is this going to work with all mob vision types?
@@ -364,23 +380,8 @@ Tech: relativity
 wormhole tech - teleport away mobs with mass below 3 when they get too near the player
     short CD, small energy cost, only mobs below a mass
 
-extend brainstorming animation timers to fps cap?
-  will it be smoother or choppier?
-  anything else needs to hit limited fps on a high fps monitor?
-
-perfect diamagnatism could bounce on mobs, or even map elements?
-  could work like a rocket jump?
-
 tech: Bose Einstein condensate - freezes enemies in pilot wave, and drains some energy?
-
-make super balls with Zectron deflectable with field
-  but is there a simple way to do this?
-
-set mob health bar colors based on status effects?
-  make mob damage immunity a mob status effect?
   
-tech: rail gun area damage effect, but for all harpoon mode
-
 mob status effect - vulnerability
   mobs take 4x damage for __ time
     afterwards mobs go back to normal damage taken
@@ -839,9 +840,6 @@ mob/boss that fires a laser at player, but give player time to avoid
   they target where player was 1 second ago
   they turn to face player?
 
-tech rocket jump - jumping produces an explosion at your feet that lets you jump extra high, but does some damage
-  require electric reactive armor?
-
 Plasma Burner: upgrade for plasma torch, basically just a jet engine. does high damage, but short range, mostly for player movement.
   maybe reduce gravity to really low then apply a vector away from mouse direction
 
@@ -850,17 +848,6 @@ auto-gon - auto battler with n-gon mob AI and tech
     they fight other mobs and bosses
   similar research and tech system to n-gon
   some mobs can fire player weapons
-
-tech: relativistic jets:
-  small particles that shot out from front and back poles and end up in a wide variety of spirals
-    slow trickle when charging and several more when firing
-  
-Tech: Make player smol
-
-adapt the cloaking graphics to make a flashlight cone visual effect
-  put code in level.do?
-
-be nice if block throwing had a projected path
 
 Pilot wave tech
   Energy use is increased, but you can now shape blocks using pressure
@@ -1234,11 +1221,8 @@ look up sci-fi science ideas here  https://projectrho.com/public_html/rocket/
 
 possible names for tech
   sidereal - with respect to the stars  (an extra rotation for time keeping)
-  holonomy -  parallel transport of a vector leads to movement (applies to curved space)
-  holographic - 2-D surface can predict the 3-D space behind it?  I think
   entropic gravity - gravity is emergent in a holographic way
     (maybe a field tech for negative mass)
-  conformal - similar rules for small and big scales  linked to holographic principle
   hypergolic - A hypergolic propellant combination used in a rocket engine is one whose components spontaneously ignite when they come into contact with each other.
   swarm intelligence - for a drone tech
   metaheuristic - is a higher-level procedure or heuristic designed to find, generate, or select a heuristic (partial search algorithm) that may provide a sufficiently good solution to an optimization problem, especially with incomplete or imperfect information or limited computation capacity
@@ -1292,7 +1276,6 @@ possible names for tech
   amalgam, amalgamation - the action, process, or result of combining or uniting. 
   thermoplastic - the stuff in 3-D printers, use for molecular assembler tech
   ergosphere - region of a spinning black hole that might allow FTL or alternate realities.
-  equivalence principle - gravity and acceleration are the same
   Casimir effect - attractive force between two close conductive plates
   difference engine - early calculator/computer
   cyanoacrylate - superglue use for a slowing effect?
@@ -1307,8 +1290,13 @@ possible names for tech
   cork - used as a heat shield for rockets
   P = NP - something with speeding up calculation times
   transistivity - something where a>b and b>c ->  a>c
-  lenticular - looks different from different angles (lasers?)
+  lenticular - looks different from different angles (lasers?, cloaking?)
+    every few seconds pick a random skin tech?
   De Sitter space - simple model of universe related to general relativity (mass-energy?)
+  active optics - something with lasers?  maybe something with diffuse beam getting smaller
+  Quintessence - related to dark energy
+  biofilm - something defensive?  related to spores?
+  Thermogalvanic - makes things cold, for no energy
 
 ******************************************************* DESIGN ******************************************************
 
