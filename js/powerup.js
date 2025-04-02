@@ -286,13 +286,13 @@ const powerUps = {
     endDraft(type, isCanceled = false) { //type should be a gun, tech, or field
         if (isCanceled) {
             if (tech.isCancelDuplication) {
-                const value = 0.06
+                const value = 0.07
                 tech.duplication += value
                 simulation.inGameConsole(`tech.duplicationChance() <span class='color-symbol'>+=</span> ${value}`)
                 simulation.circleFlare(value);
             }
             if (tech.isCancelRerolls) {
-                for (let i = 0, len = 8 + 4 * Math.random(); i < len; i++) {
+                for (let i = 0, len = 10 + 6 * Math.random(); i < len; i++) {
                     let spawnType
                     if (Math.random() < 0.4) {
                         spawnType = "ammo"
@@ -304,7 +304,7 @@ const powerUps = {
                     powerUps.spawn(m.pos.x + 40 * (Math.random() - 0.5), m.pos.y + 40 * (Math.random() - 0.5), spawnType, false);
                 }
             }
-            if (tech.isCancelCouple) powerUps.spawnDelay("coupling", 8)
+            if (tech.isCancelCouple) powerUps.spawnDelay("coupling", 10)
             if (tech.isCancelTech && tech.cancelTechCount === 0 && type !== "entanglement") {
                 tech.cancelTechCount++
                 // powerUps.research.use('tech')
@@ -541,7 +541,7 @@ const powerUps = {
                 <div class="right-column">
                     <div class="row" id="constraint-1"><strong>0.85x</strong> <strong class='color-d'>damage</strong> per level<br><strong>1.25x</strong> <strong class='color-defense'>damage taken</strong> per level</div>
                     <div class="row" id="constraint-2">spawn <strong>more</strong> mobs<br>mobs move <strong>faster</strong></div>
-                    <div class="row" id="constraint-3">spawn a <strong>2nd</strong> boss each level<br>bosses spawn <strong>0.5x</strong> power ups</div>
+                    <div class="row" id="constraint-3">spawn a <strong>2nd boss</strong> each level<br>bosses spawn <strong>0.5x</strong> power ups</div>
                     <div class="row" id="constraint-4"><strong>0.85x</strong> <strong class='color-d'>damage</strong> per level<br><strong>1.25x</strong> <strong class='color-defense'>damage taken</strong> per level</div>
                     <div class="row" id="constraint-5"><strong>+1</strong> random <strong class="constraint">constraint</strong> each level<br>fewer initial power ups</div>
                     <div class="row" id="constraint-6"><strong>0.5x</strong> initial <strong class='color-d'>damage</strong><br><strong>2x</strong> initial <strong class='color-defense'>damage taken</strong></div>
@@ -792,7 +792,7 @@ const powerUps = {
                         simulation.drawList.push({ //add dmg to draw queue
                             x: m.pos.x,
                             y: m.pos.y,
-                            radius: overHeal * 100 * simulation.healScale,
+                            radius: Math.max(3, overHeal * 100 * simulation.healScale),
                             color: "#0eb",
                             time: simulation.drawTime
                         });
@@ -862,7 +862,7 @@ const powerUps = {
                 }
             }
             if (powerUps.healGiveMaxEnergy) {
-                tech.healMaxEnergyBonus += 0.14 * tech.largerHeals * (tech.isHalfHeals ? 0.5 : 1)
+                tech.healMaxEnergyBonus += 0.15 * tech.largerHeals * (tech.isHalfHeals ? 0.5 : 1)
                 m.setMaxEnergy();
             }
         },
@@ -1761,7 +1761,6 @@ const powerUps = {
             }
         }
 
-
         if (smallIndexes.length > 2 && Math.random() < 0.66) {             // console.log("no big, at least 3 small can combine")
             for (let j = 0; j < 3; j++) {
                 for (let i = 0; i < powerUp.length; i++) {
@@ -1773,7 +1772,7 @@ const powerUps = {
                 }
             }
 
-            options = ["tech", "gun", "field"]
+            options = ["tech", "tech", "tech", "gun", "gun", "field"]
             powerUps.directSpawn(where.x, where.y, options[Math.floor(Math.random() * options.length)], false)
         } else if (bigIndexes.length > 0 && Math.random() < 0.5) { // console.log("at least 1 big can spilt")
             const index = bigIndexes[Math.floor(Math.random() * bigIndexes.length)]

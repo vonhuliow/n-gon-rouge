@@ -1079,14 +1079,14 @@ const simulation = {
             simulation.ephemera.push({
                 name: "dmgDefBars", count: 0, do() {
                     if (!(m.cycle % 15)) { //4 times a second
-                        const defense = m.defense() //* simulation.dmgScale           //update defense bar
+                        const defense = m.defense() * simulation.dmgScale           //update defense bar
                         if (m.lastCalculatedDefense !== defense) {
                             document.getElementById("defense-bar").style.width = Math.floor(300 * m.maxHealth * (1 - defense)) + "px";
                             m.lastCalculatedDefense = defense
                         }
-                        const damage = tech.damageFromTech() //* m.dmgScale           //update damage bar
+                        const damage = tech.damageFromTech() * m.dmgScale           //update damage bar
                         if (m.lastCalculatedDamage !== damage) {
-                            document.getElementById("damage-bar").style.height = Math.floor((Math.atan(0.25 * damage - 0.25) + 0.25) * 0.53 * canvas.height) + "px";
+                            document.getElementById("damage-bar").style.height = Math.floor((Math.atan(0.25 * damage - 0.25) + 0.25) * 0.63 * canvas.height) + "px";
                             m.lastCalculatedDamage = damage
                         }
                     }
@@ -1242,7 +1242,13 @@ const simulation = {
                                 m.health *= 0.95 //remove 5%
                                 m.displayHealth();
                             }
-
+                            simulation.drawList.push({ //add dmg to draw queue
+                                x: m.pos.x,
+                                y: m.pos.y,
+                                radius: 5,
+                                color: "rgb(255, 0, 195)",
+                                time: 4
+                            });
                         }
                         if (tech.cyclicImmunity && m.immuneCycle < m.cycle + tech.cyclicImmunity) m.immuneCycle = m.cycle + tech.cyclicImmunity; //player is immune to damage for 60 cycles
 

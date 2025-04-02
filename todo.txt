@@ -1,14 +1,12 @@
 ******************************************************** NEXT PATCH **************************************************
 
-pilot wave tech: Bells theorem - field is always on for no energy cost
-pilot wave tech: principle of locality - 0.9x damage taken while inside pilot wave field, -2 choices
+tech: quantum Darwinism - once per level if health < 0 spawn a tech and get 2% JUNK
+harpoon tech: rebar - make the harpoon into rebar.  ~2x damage for 10 ammo
+harpoon tech: maul -  make the rebar into a maul.  ~2x damage  for 10 ammo
+missile tech: missile guidance - missiles follow mouse if you are crouching, and 1.5 extra missile ammo
 
-hidden-variable theory 1.2->1.3 damage per field tech
-WIMPS spawn 4->5 research per level
-
-bug fixes
-  fixed exploit with final tech power up on subway level
-
+bug fix
+  snakeBoss has better behavior when stunned
 
 ******************************************************** BUGS ********************************************************
 
@@ -16,21 +14,111 @@ graphical bug - player can become crouched while not touching the ground if they
 
 *********************************************************** TODO *****************************************************
 
+difficulty rework:
+  make it clear that the player is getting stronger
+  just changing damage taken and damage done is kinda invisible
+  difficulty that players can see:
+    maybe just make the change in damage done/taken animated at start of new level?
+    more mobs
+    more bosses
+    more constraints
+    put mob types into tiers, higher tiers have more health and do more damage
+      remove the random linked up groups of mobs
+      some level specific bosses will need to have different versions for each tier
+      What do do with old difficulty system
+        need to replace 1 or both of these:
+            0.85x damage per level
+            1.25x damage taken per level
+          replace with:
+            difficulty 0: at higher levels spawn high tier mobs (so basically just the new rule)
+            each level has a chance to spawn mobs from the next higher tier
+
+mob tiers
+  tier 0: starter
+  tier 1: slasher, hopper, flutter, shooter, grower, grenadier, laser, beamer, launcher, exploder
+  tier 2: slasher2, stabber, springer, striker, spinner, sucker, pulsar, focuser, spawner
+  tier 3: slasher3, hopMother, stinger, sniper, sneaker, ghoster, laserLayer, launcherOne
+boss tiers
+  tier 0:
+  tier 1: snakeBoss, dragonFlyBoss, slashBoss, revolutionBoss, streamBoss, launcherBoss, grenadierBoss, shooterBoss, orbitalBoss, spiderBoss
+  tier 2: powerUpBossBaby, sneakBoss, blockBoss, laserTargetingBoss, blinkBoss, shieldingBoss, pulsarBoss, spawnerBossCulture, growBossCulture
+  tier 3: powerUpBoss, laserLayerBoss, historyBoss, beetleBoss, snakeSpitBoss, mantisBoss, laserBombingBoss, cellBossCulture, bomberBoss, timeSkipBoss
+levels:
+  0 = tier 0: initial
+  1,2,3,4 = tier 1: 3 random levels -> reactor(end of tier 1)
+  5,6,7,8 = tier 2: 3 random levels -> interferometer, factory, reservoir(end of tier 2)
+  9,10,11,12,13 = tier 3: 3 random levels -> final, subway (end of tier 3)
+  
+  
+Gravity could flip on the final level.
+
+n-gon needs to be stranger
+  more wild synergies
+  more subtle lore hints and world building
+  more secrets
+
+!conformal infinity - after making a wormhole, subsequent wormholes generate energy 10 energy for the next 5 seconds
+  replace holographic principle?
+  !image
+!quasar  - gain 1 random small power up for each block your wormhole eats
+  cap at 10?
+  !image
+
+!!!mob: spiker - moves around, but then stops and makes porcupine spikes for 2 seconds, then moves again.
+  maybe use hopper movement?
+  maybe use slasher laser code
+
+make guns do different things if  tap or hold fire
+  effects have some overlap with crouch
+  guns
+    wave: amplitude difference, single wave/double wave
+    nail gun:  one large bullet, faster
+    laser: wide beam
+    super balls: ball velocity
+    foam: speed, size
+    harpoon: retract early?
+  like incendiary, but only active on tap and release
+    bigger explosions to balance?
+
+tech - if you haven't fired a bullet in 4 seconds your next bullet is bigger?
+  effect?
+    size: nail gun,shotgun,super balls,drones,foam,harpoon
+    spores,mine: number of projectiles
+    wave?
+    explosion size: missiles,grenades
+    laser?
+  code?
+    ephemera?  This doesn't sync to the bullet fired, it would have to be a additional projectiles
+    custom to each gun?
+
+option for numerical HUD
+  dmg, energy, health, defense
+
+hold jump to jump higher
+  field tech?  or skin tech?
+    maybe require nitinol first?
+
+increase interest percent, but make it focused on one type:
+  this lets the player make more strategic choices
+  research, coupling, ammo?
+
+wormhole fieldtech:   - gain 1% duplication for this level each time the wormhole eats a block
+  add a limit to the number of blocks that can be duplicated?
+  can this be exploited to not be fun?
+  how many blocks are on an average level?
+
+tech - rip in spacetime - using wormhole leaves behind a zone of radiation, like neutron bomb  ( grenadeNeutron )
+  make a new bullet type for rip() in spacetime so you can use it for several things
+  rips()
+    lasts 2-10 seconds?
+    damages mobs and player
+    slows things caught inside?
+    black circle with randomly changing radius and sparkles inside the black circle
+      white stroke (maybe with dotted lines like laser)
+
 tech - benefit if you haven't killed any mobs on this level
   have to clean up mobs that die on level spawn from falling blocks 
 tech - benefit in the first 20 seconds of the level
-
-plasma globe - it should not explode on map contact, but instead shrink?
-  only explode on mouse release
-  use pilot wave code?
-
-rework JUNK
-  example:  +5 JUNK adds a frequency of (1?  6?) to a random JUNK tech
-    if you see that JUNK tech again it's frequency drops down to 0 again
-  have to rework constraints and a few other tech...
-
-mob - moves around, but then stops and makes porcupine spikes for 2 seconds, then moves again.
-  maybe use hopper movement?
 
 soft body boss?
   search    softBody(x, y, angle = 0, isAttached = true, len = 15, radius = 20, stiffness = 1, damping = 1) {
@@ -1163,10 +1251,9 @@ if pause is pressed while selecting power ups, display pause menu on top of sele
   time dilation - graphic of a hyperbolic equation Luminogram
   negative mass - Blacklight painting by Moebius
   plasma torch - by Dan Mumford
-
   metamaterial cloaking - Scientific photography by Miki Asai,   by Bruce Munro
   molecular assembler - by Laurie Greasley 16-bit Isometric 
-  wormhole - by Tim White
+  wormhole - wormhole funnel entrance and exit classic sci-fi painting
   pilot wave - none
 
   nail gun - Screenprint
@@ -1176,7 +1263,7 @@ if pause is pressed while selecting power ups, display pause menu on top of sele
   drones - insect quadcopter tilt-shift photography
   super balls - By Akari Toriyama
   wave - sound wave oscilloscope by Paul Catherall,   concentric circles by Paul Catherall 
-    Barbara Takenaga's painting depicting a clean sound wave on aoscilloscope device --ar 3:2 --v 5
+    Barbara Takenaga's painting depicting a clean sound wave on oscilloscope device --ar 3:2 --v 5
   foam - black blobs Ink doodle
   harpoon - iron harpoon on a rope weapon art white background by Eiichiro Oda --no fish --ar 3:2 --v 5 --s 750
   mine - by Dan McPharlin
@@ -1215,7 +1302,6 @@ possible names for tech
   stochastic optimization
   electrostatic discharge
   Gödel's incompleteness
-  quantum zeno effect  (perturbation of a system prevents some systems from evolving because it scrambles coherence)  (apply to lasers, fields)
   counterfactual - something false
   regression to the mean
   phlogiston theory is a superseded scientific theory that postulated the existence of a fire-like element called phlogiston
@@ -1226,14 +1312,13 @@ possible names for tech
   SQUID (for superconducting quantum interference device) is a very sensitive magnetometer used to measure extremely subtle magnetic fields, based on superconducting loops containing Josephson junctions.
   Josephson junction - superconducting junction used in SQUIDS and quantum computers
   nuclear pasta - hard matter in neutron star
-  nonlocal, nonlocality:  maybe use for pilot wave 
+  spaghettification
   fine-tuned universe
   nonperturbative
   D-branes
   instanton or pseudoparticle
   soliton  (wave packet)
   hall effect thrusters
-  spaghettification
   particle accelerator
   superluminal signalling
   NP-complete
@@ -1265,7 +1350,6 @@ possible names for tech
   Casimir effect - attractive force between two close conductive plates
   difference engine - early calculator/computer
   cyanoacrylate - superglue use for a slowing effect?
-  superposition - something with waves overlapping
   math terms - integral, derivative, Laplace transform, inflection point
   quasicrystals - something with low friction, maybe defense?
   Coalescence - things merging together like clouds.  maybe mergin power ups?
@@ -1283,6 +1367,10 @@ possible names for tech
   Quintessence - related to dark energy
   biofilm - something defensive?  related to spores?
   Thermogalvanic - makes things cold, for no energy
+  Intron - noncoding DNA that separates regions of coding DNA,  use for JUNK tech
+  virtual particles - can have these properties: imaginary mass, violation of the conservation of energy, violation of causality, traveling faster than light or backwards in time, popping in and out of the vacuum via vacuum fluctuations
+  Sintering - the process of compacting and forming a solid mass of material by pressure[1] or heat[2] without melting it to the point of liquefaction. Sintering happens as part of a manufacturing process used with metals, ceramics, plastics, 
+
 
 ******************************************************* DESIGN ******************************************************
 
