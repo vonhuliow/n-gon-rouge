@@ -6,8 +6,8 @@
 
 #### Making my fork just a little bit more me
 
-Hosted on my own alternative site
+[Hosted on my own alternative site here](https://cyclokid.github.io/n-gon-personal)
 
-[CycloKid's Site](https://cyclokid.github.io/n-gon-personal)
+### Changes made
 
-no audio or sfx in this game 😔 (maybe a good thing if youre in school rn tho 🤔)
+* Actions Workflow to minify, compress, and mangle the site's code for much faster download (loading) speeds (WIP)
