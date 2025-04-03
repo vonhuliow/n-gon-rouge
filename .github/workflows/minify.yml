@@ -9,6 +9,10 @@ on:
   push:
     branches:
       - 'master'
+    paths-ignore:
+      - '**/README.md'
+      - '**/todo.txt'
+      - '**/LICENSE'
 
 jobs:
   checkout-minify-push:
