@@ -6,7 +6,7 @@
 
 #### Making my fork just a little bit more me
 
-[Hosted on my own alternative site here](https://cyclokid.github.io/n-gon-personal)
+[Hosted on my GitHub Pages (cyclokid.github.io)](https://cyclokid.github.io/n-gon-personal)
 
 ### Changes made
 
